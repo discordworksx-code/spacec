@@ -1,0 +1,3 @@
+V8.2 HOTFIX
+- Fixed the React crash that turned the entire page black when opening device options.
+- Imported the missing Live/Radio icon used by the right-click menu.

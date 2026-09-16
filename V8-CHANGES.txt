@@ -1,0 +1,12 @@
+SPACE APP V8
+- Theme selector moved to the left side of Admin header.
+- Custom desktop shortcuts remain visible on desktop and sit underneath every open Windows frame.
+- Screen renamed to VM Screen.
+- VM Screen shows a secure 10-second loading screen before opening.
+- Added Live option under VM Screen.
+- Device video apps are visible only in Live, not VM Screen.
+- Admin Devices Hub can upload a video, upload a taskbar app icon, name it, play it, and stop it.
+- Video runs as a closable Windows-style app above the taskbar with a taskbar icon.
+- Closing with X stops it and removes the taskbar icon.
+- Live reopening resumes video from elapsed server time and loops normally.
+- Admin can enable/disable Live per device; disabled view shows: Error Live streaming now.

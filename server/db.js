@@ -1,13 +1,13 @@
-import fs from 'fs';
-import path from 'path';
-import crypto from 'crypto';
-import { fileURLToPath } from 'url';
+import fs from "fs";
+import path from "path";
+import crypto from "crypto";
+import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const DATA_DIR = path.join(__dirname, '..', 'data');
-const DB_FILE = path.join(DATA_DIR, 'space_db.json');
+const DATA_DIR = path.join(__dirname, "..", "data");
+const DB_FILE = path.join(DATA_DIR, "space_db.json");
 
 // Ensure data directory exists
 if (!fs.existsSync(DATA_DIR)) {
@@ -16,18 +16,38 @@ if (!fs.existsSync(DATA_DIR)) {
 
 // Generate code format: SPC-XXXX-XXXX-XXX
 export function generateApplicationCode() {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  const segment = (len) => Array.from({ length: len }, () => chars.charAt(Math.floor(Math.random() * chars.length))).join('');
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  const segment = (len) =>
+    Array.from({ length: len }, () =>
+      chars.charAt(Math.floor(Math.random() * chars.length)),
+    ).join("");
   return `SPC-${segment(4)}-${segment(4)}-${segment(3)}`;
 }
 
 // Generate realistic device / server names
-export function generateRealisticDeviceName(type = 'device', os = 'Windows 11 Pro') {
-  const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  const randStr = (len) => Array.from({ length: len }, () => chars.charAt(Math.floor(Math.random() * chars.length))).join('');
-  
-  if (type === 'server') {
-    const srvPrefixes = ['SRV-PROD', 'NODE-CENTRAL', 'EDGE-RELAY', 'HOST-CORP', 'DB-CLUSTER', 'GATEWAY-X', 'AWS-NODE', 'V-SERVER', 'CORE-NET', 'KUBE-WORKER'];
+export function generateRealisticDeviceName(
+  type = "device",
+  os = "Windows 11 Pro",
+) {
+  const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const randStr = (len) =>
+    Array.from({ length: len }, () =>
+      chars.charAt(Math.floor(Math.random() * chars.length)),
+    ).join("");
+
+  if (type === "server") {
+    const srvPrefixes = [
+      "SRV-PROD",
+      "NODE-CENTRAL",
+      "EDGE-RELAY",
+      "HOST-CORP",
+      "DB-CLUSTER",
+      "GATEWAY-X",
+      "AWS-NODE",
+      "V-SERVER",
+      "CORE-NET",
+      "KUBE-WORKER",
+    ];
     const p = srvPrefixes[Math.floor(Math.random() * srvPrefixes.length)];
     return `${p}-${randStr(4)}`;
   }
@@ -42,24 +62,37 @@ export function generateRealisticDeviceName(type = 'device', os = 'Windows 11 Pr
     () => `DEV-${randStr(4)}-${randStr(3)}`,
     () => `RIG-${randStr(6)}`,
     () => `CORP-USER-${randStr(4)}`,
-    () => `NODE-${randStr(5)}`
+    () => `NODE-${randStr(5)}`,
   ];
 
   return pcStyles[Math.floor(Math.random() * pcStyles.length)]();
 }
 
 // Generate realistic device metrics & IP
-export function generateRealisticDeviceMetrics(type = 'device', os = 'Windows 11 Pro') {
-  const isServer = type === 'server';
-  const ipPrefix = isServer ? ['10.0.', '172.16.', '51.15.'][Math.floor(Math.random() * 3)] : ['192.168.1.', '192.168.0.', '10.0.1.'][Math.floor(Math.random() * 3)];
+export function generateRealisticDeviceMetrics(
+  type = "device",
+  os = "Windows 11 Pro",
+) {
+  const isServer = type === "server";
+  const ipPrefix = isServer
+    ? ["10.0.", "172.16.", "51.15."][Math.floor(Math.random() * 3)]
+    : ["192.168.1.", "192.168.0.", "10.0.1."][Math.floor(Math.random() * 3)];
   const ip = `${ipPrefix}${Math.floor(10 + Math.random() * 240)}`;
-  
-  const locations = ['US-East Node', 'EU-Central Cluster', 'AP-East Gateway', 'US-West Relay', 'EU-West Station'];
+
+  const locations = [
+    "US-East Node",
+    "EU-Central Cluster",
+    "AP-East Gateway",
+    "US-West Relay",
+    "EU-West Station",
+  ];
   const location = locations[Math.floor(Math.random() * locations.length)];
-  
+
   const ping = `${Math.floor(12 + Math.random() * 38)}ms`;
   const cpu = `${Math.floor(8 + Math.random() * 45)}%`;
-  const ram = isServer ? `${(4 + Math.random() * 12).toFixed(1)} / 32 GB` : `${(2 + Math.random() * 6).toFixed(1)} / 16 GB`;
+  const ram = isServer
+    ? `${(4 + Math.random() * 12).toFixed(1)} / 32 GB`
+    : `${(2 + Math.random() * 6).toFixed(1)} / 16 GB`;
 
   return { ip, location, ping, cpu, ram };
 }
@@ -70,9 +103,16 @@ class Database {
       accounts: [],
       invite_links: [],
       system_config: {
-        active_intro: '/into.mp4',
-        available_intros: ['/into.mp4', '/intro2.mp4', '/intro3.mp4', '/intro4.mp4', '/intro5.mp4']
-      }
+        active_intro: "/into.mp4",
+        app_theme: "app",
+        available_intros: [
+          "/into.mp4",
+          "/intro2.mp4",
+          "/intro3.mp4",
+          "/intro4.mp4",
+          "/intro5.mp4",
+        ],
+      },
     };
     this.load();
     this.seedDefaultAccounts();
@@ -81,13 +121,13 @@ class Database {
   load() {
     try {
       if (fs.existsSync(DB_FILE)) {
-        const raw = fs.readFileSync(DB_FILE, 'utf-8');
+        const raw = fs.readFileSync(DB_FILE, "utf-8");
         this.data = JSON.parse(raw);
         if (!Array.isArray(this.data.accounts)) {
           this.data.accounts = [];
         }
         // Ensure all existing accounts have devices array
-        this.data.accounts.forEach(acc => {
+        this.data.accounts.forEach((acc) => {
           if (!Array.isArray(acc.devices)) {
             acc.devices = [];
           }
@@ -98,22 +138,39 @@ class Database {
         }
         if (!this.data.system_config) {
           this.data.system_config = {
-            active_intro: '/into.mp4',
-            available_intros: ['/into.mp4', '/intro2.mp4', '/intro3.mp4', '/intro4.mp4', '/intro5.mp4']
+            active_intro: "/into.mp4",
+            app_theme: "app",
+            available_intros: [
+              "/into.mp4",
+              "/intro2.mp4",
+              "/intro3.mp4",
+              "/intro4.mp4",
+              "/intro5.mp4",
+            ],
           };
         }
       } else {
         this.save();
       }
     } catch (err) {
-      console.error('Error loading database, initializing fresh state:', err.message);
+      console.error(
+        "Error loading database, initializing fresh state:",
+        err.message,
+      );
       this.data = {
         accounts: [],
         invite_links: [],
         system_config: {
-          active_intro: '/into.mp4',
-          available_intros: ['/into.mp4', '/intro2.mp4', '/intro3.mp4', '/intro4.mp4', '/intro5.mp4']
-        }
+          active_intro: "/into.mp4",
+          app_theme: "app",
+          available_intros: [
+            "/into.mp4",
+            "/intro2.mp4",
+            "/intro3.mp4",
+            "/intro4.mp4",
+            "/intro5.mp4",
+          ],
+        },
       };
       this.save();
     }
@@ -121,29 +178,34 @@ class Database {
 
   save() {
     try {
-      fs.writeFileSync(DB_FILE, JSON.stringify(this.data, null, 2), 'utf-8');
+      fs.writeFileSync(DB_FILE, JSON.stringify(this.data, null, 2), "utf-8");
     } catch (err) {
-      console.error('Error saving database:', err.message);
+      console.error("Error saving database:", err.message);
     }
   }
 
   seedDefaultAccounts() {
     if (this.data.accounts.length === 0) {
       const demoAccount = {
-        id: 'acc_' + Date.now().toString(36) + Math.random().toString(36).substring(2, 7),
-        username: 'commander',
-        password: 'spacepassword2026',
-        application_code: 'SPC-9842-8871-901',
-        status: 'Active',
-        webhook_url: '',
+        id:
+          "acc_" +
+          Date.now().toString(36) +
+          Math.random().toString(36).substring(2, 7),
+        username: "commander",
+        password: "spacepassword2026",
+        application_code: "SPC-9842-8871-901",
+        status: "Active",
+        webhook_url: "",
         webhook_updated_at: null,
         devices: [],
         created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       };
       this.data.accounts.push(demoAccount);
       this.save();
-      console.log('Seeded default user account: commander / spacepassword2026 / SPC-9842-8871-901');
+      console.log(
+        "Seeded default user account: commander / spacepassword2026 / SPC-9842-8871-901",
+      );
     }
   }
 
@@ -152,15 +214,20 @@ class Database {
   }
 
   getAccountById(id) {
-    return this.data.accounts.find(a => a.id === id);
+    return this.data.accounts.find((a) => a.id === id);
   }
 
   getAccountByUsername(username) {
-    return this.data.accounts.find(a => a.username.toLowerCase() === username.trim().toLowerCase());
+    return this.data.accounts.find(
+      (a) => a.username.toLowerCase() === username.trim().toLowerCase(),
+    );
   }
 
   getAccountByCode(code) {
-    return this.data.accounts.find(a => a.application_code.trim().toUpperCase() === code.trim().toUpperCase());
+    return this.data.accounts.find(
+      (a) =>
+        a.application_code.trim().toUpperCase() === code.trim().toUpperCase(),
+    );
   }
 
   createAccount(username, password) {
@@ -177,16 +244,19 @@ class Database {
     } while (this.getAccountByCode(code) && attempts < 100);
 
     const newAccount = {
-      id: 'acc_' + Date.now().toString(36) + Math.random().toString(36).substring(2, 7),
+      id:
+        "acc_" +
+        Date.now().toString(36) +
+        Math.random().toString(36).substring(2, 7),
       username: cleanUsername,
       password: password.trim(),
       application_code: code,
-      status: 'Active',
-      webhook_url: '',
+      status: "Active",
+      webhook_url: "",
       webhook_updated_at: null,
       devices: [],
       created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     };
 
     this.data.accounts.push(newAccount);
@@ -195,14 +265,17 @@ class Database {
   }
 
   updateAccount(id, updates) {
-    const index = this.data.accounts.findIndex(a => a.id === id);
+    const index = this.data.accounts.findIndex((a) => a.id === id);
     if (index === -1) {
-      throw new Error('Account not found');
+      throw new Error("Account not found");
     }
 
     const current = this.data.accounts[index];
 
-    if (updates.username && updates.username.trim().toLowerCase() !== current.username.toLowerCase()) {
+    if (
+      updates.username &&
+      updates.username.trim().toLowerCase() !== current.username.toLowerCase()
+    ) {
       const exists = this.getAccountByUsername(updates.username.trim());
       if (exists && exists.id !== id) {
         throw new Error(`Username "${updates.username}" is already in use.`);
@@ -210,7 +283,7 @@ class Database {
       current.username = updates.username.trim();
     }
 
-    if (updates.password !== undefined && updates.password.trim() !== '') {
+    if (updates.password !== undefined && updates.password.trim() !== "") {
       current.password = updates.password.trim();
     }
 
@@ -230,9 +303,9 @@ class Database {
   }
 
   resetWebhookCooldown(id) {
-    const index = this.data.accounts.findIndex(a => a.id === id);
+    const index = this.data.accounts.findIndex((a) => a.id === id);
     if (index === -1) {
-      throw new Error('Account not found');
+      throw new Error("Account not found");
     }
     this.data.accounts[index].webhook_updated_at = null;
     this.data.accounts[index].updated_at = new Date().toISOString();
@@ -241,12 +314,13 @@ class Database {
   }
 
   toggleAccountStatus(id, status) {
-    const index = this.data.accounts.findIndex(a => a.id === id);
+    const index = this.data.accounts.findIndex((a) => a.id === id);
     if (index === -1) {
-      throw new Error('Account not found');
+      throw new Error("Account not found");
     }
     const current = this.data.accounts[index];
-    current.status = status || (current.status === 'Active' ? 'Disabled' : 'Active');
+    current.status =
+      status || (current.status === "Active" ? "Disabled" : "Active");
     current.updated_at = new Date().toISOString();
     this.data.accounts[index] = current;
     this.save();
@@ -254,9 +328,9 @@ class Database {
   }
 
   deleteAccount(id) {
-    const index = this.data.accounts.findIndex(a => a.id === id);
+    const index = this.data.accounts.findIndex((a) => a.id === id);
     if (index === -1) {
-      throw new Error('Account not found');
+      throw new Error("Account not found");
     }
     const deleted = this.data.accounts.splice(index, 1)[0];
     this.save();
@@ -276,36 +350,49 @@ class Database {
   addDeviceToAccount(accountId, deviceData) {
     const account = this.getAccountById(accountId);
     if (!account) {
-      throw new Error('Account not found');
+      throw new Error("Account not found");
     }
     if (!Array.isArray(account.devices)) {
       account.devices = [];
     }
 
-    const type = deviceData.type || 'device';
-    const os = deviceData.os || 'Windows 11 Pro';
-    const name = (deviceData.name && deviceData.name.trim()) || generateRealisticDeviceName(type, os);
+    const type = deviceData.type || "device";
+    const os = deviceData.os || "Windows 11 Pro";
+    const name =
+      (deviceData.name && deviceData.name.trim()) ||
+      generateRealisticDeviceName(type, os);
     const metrics = generateRealisticDeviceMetrics(type, os);
 
     const newDevice = {
-      id: 'dev_' + Date.now().toString(36) + Math.random().toString(36).substring(2, 6),
+      id:
+        "dev_" +
+        Date.now().toString(36) +
+        Math.random().toString(36).substring(2, 6),
       name,
       type, // 'device' | 'server'
-      os,   // 'Windows 11 Pro', 'Windows 10 Enterprise', 'Windows Server 2022', 'Linux Ubuntu 24.04', etc.
+      os, // 'Windows 11 Pro', 'Windows 10 Enterprise', 'Windows Server 2022', 'Linux Ubuntu 24.04', etc.
       ip: deviceData.ip || metrics.ip,
       location: deviceData.location || metrics.location,
-      status: deviceData.status || 'Online', // 'Online' | 'Offline'
-      ping: deviceData.status === 'Offline' ? '—' : metrics.ping,
-      cpu: deviceData.status === 'Offline' ? '—' : metrics.cpu,
+      status: deviceData.status || "Online", // 'Online' | 'Offline'
+      ping: deviceData.status === "Offline" ? "—" : metrics.ping,
+      cpu: deviceData.status === "Offline" ? "—" : metrics.cpu,
       ram: metrics.ram,
-      wallpaper: deviceData.wallpaper || '/win11/img/wallpaper/default/img0.jpg',
-      accountName: deviceData.accountName || name || 'Administrator',
-      avatar: deviceData.avatar || '/win11/img/asset/prof.png',
-      customApps: Array.isArray(deviceData.customApps) ? deviceData.customApps : [],
+      wallpaper:
+        deviceData.wallpaper || "/win11/img/wallpaper/default/img0.jpg",
+      accountName: deviceData.accountName || name || "Administrator",
+      avatar: deviceData.avatar || "/win11/img/asset/prof.png",
+      customApps: Array.isArray(deviceData.customApps)
+        ? deviceData.customApps
+        : [],
+      iconPositions:
+        deviceData.iconPositions && typeof deviceData.iconPositions === "object"
+          ? deviceData.iconPositions
+          : {},
       typingMessages: [],
       isScreenOpen: false,
-      lastSeen: deviceData.status === 'Online' ? 'Just now' : '2 hours ago',
-      created_at: new Date().toISOString()
+      liveEnabled: true,
+      lastSeen: deviceData.status === "Online" ? "Just now" : "2 hours ago",
+      created_at: new Date().toISOString(),
     };
 
     account.devices.push(newDevice);
@@ -316,15 +403,15 @@ class Database {
   updateDeviceInAccount(accountId, deviceId, updates) {
     const account = this.getAccountById(accountId);
     if (!account) {
-      throw new Error('Account not found');
+      throw new Error("Account not found");
     }
     if (!Array.isArray(account.devices)) {
       account.devices = [];
     }
 
-    const devIndex = account.devices.findIndex(d => d.id === deviceId);
+    const devIndex = account.devices.findIndex((d) => d.id === deviceId);
     if (devIndex === -1) {
-      throw new Error('Device not found');
+      throw new Error("Device not found");
     }
 
     const dev = account.devices[devIndex];
@@ -333,21 +420,26 @@ class Database {
     if (updates.os !== undefined) dev.os = updates.os;
     if (updates.ip !== undefined) dev.ip = updates.ip;
     if (updates.wallpaper !== undefined) dev.wallpaper = updates.wallpaper;
-    if (updates.accountName !== undefined) dev.accountName = updates.accountName;
+    if (updates.accountName !== undefined)
+      dev.accountName = updates.accountName;
     if (updates.avatar !== undefined) dev.avatar = updates.avatar;
-    if (updates.customApps !== undefined && Array.isArray(updates.customApps)) dev.customApps = updates.customApps;
-    if (updates.isScreenOpen !== undefined) dev.isScreenOpen = Boolean(updates.isScreenOpen);
-    
+    if (updates.customApps !== undefined && Array.isArray(updates.customApps))
+      dev.customApps = updates.customApps;
+    if (updates.isScreenOpen !== undefined)
+      dev.isScreenOpen = Boolean(updates.isScreenOpen);
+    if (updates.liveEnabled !== undefined)
+      dev.liveEnabled = Boolean(updates.liveEnabled);
+
     if (updates.status !== undefined) {
       dev.status = updates.status;
-      if (dev.status === 'Online') {
+      if (dev.status === "Online") {
         dev.ping = `${Math.floor(12 + Math.random() * 30)}ms`;
         dev.cpu = `${Math.floor(8 + Math.random() * 40)}%`;
-        dev.lastSeen = 'Just now';
+        dev.lastSeen = "Just now";
       } else {
-        dev.ping = '—';
-        dev.cpu = '—';
-        dev.lastSeen = 'Offline';
+        dev.ping = "—";
+        dev.cpu = "—";
+        dev.lastSeen = "Offline";
         dev.isScreenOpen = false;
       }
     }
@@ -359,13 +451,13 @@ class Database {
 
   getAllDevices() {
     const all = [];
-    this.data.accounts.forEach(acc => {
+    this.data.accounts.forEach((acc) => {
       if (Array.isArray(acc.devices)) {
-        acc.devices.forEach(d => {
+        acc.devices.forEach((d) => {
           all.push({
             ...d,
             accountId: acc.id,
-            accountUsername: acc.username
+            accountUsername: acc.username,
           });
         });
       }
@@ -376,7 +468,7 @@ class Database {
   findDeviceGlobal(deviceId) {
     for (const acc of this.data.accounts) {
       if (Array.isArray(acc.devices)) {
-        const found = acc.devices.find(d => d.id === deviceId);
+        const found = acc.devices.find((d) => d.id === deviceId);
         if (found) {
           return { device: found, account: acc };
         }
@@ -387,32 +479,58 @@ class Database {
 
   addDeviceCustomApp(accountId, deviceId, appData) {
     const account = this.getAccountById(accountId);
-    if (!account) throw new Error('Account not found');
-    const dev = (account.devices || []).find(d => d.id === deviceId);
-    if (!dev) throw new Error('Device not found');
+    if (!account) throw new Error("Account not found");
+    const dev = (account.devices || []).find((d) => d.id === deviceId);
+    if (!dev) throw new Error("Device not found");
     if (!Array.isArray(dev.customApps)) dev.customApps = [];
 
     const newApp = {
-      id: 'app_' + Date.now().toString(36) + Math.random().toString(36).substring(2, 5),
-      name: appData.name || 'Custom App',
-      icon: appData.icon || '/win11/img/icon/explorer.png',
-      url: appData.url || '',
-      action: appData.action || 'open',
-      created_at: new Date().toISOString()
+      id:
+        "app_" +
+        Date.now().toString(36) +
+        Math.random().toString(36).substring(2, 5),
+      name: appData.name || "Custom App",
+      icon: appData.icon || "/win11/img/icon/explorer.png",
+      url: appData.url || "",
+      action: appData.action || "open",
+      created_at: new Date().toISOString(),
     };
     dev.customApps.push(newApp);
     this.save();
     return newApp;
   }
 
+  // Merge-save icon positions for a device (called from the win11 desktop itself, any viewer)
+  setDeviceIconPositions(deviceId, positions) {
+    const globalDev = this.findDeviceGlobal(deviceId);
+    if (!globalDev) throw new Error("Device not found");
+    const { device } = globalDev;
+    if (!device.iconPositions || typeof device.iconPositions !== "object")
+      device.iconPositions = {};
+    device.iconPositions = { ...device.iconPositions, ...(positions || {}) };
+    this.save();
+    return device.iconPositions;
+  }
+
+  // Admin: clear all saved icon positions for a device (reset desktop layout)
+  resetDeviceIconPositions(accountId, deviceId) {
+    const account = this.getAccountById(accountId);
+    if (!account) throw new Error("Account not found");
+    const dev = (account.devices || []).find((d) => d.id === deviceId);
+    if (!dev) throw new Error("Device not found");
+    dev.iconPositions = {};
+    this.save();
+    return true;
+  }
+
   deleteDeviceCustomApp(accountId, deviceId, appId) {
     const account = this.getAccountById(accountId);
-    if (!account) throw new Error('Account not found');
-    const dev = (account.devices || []).find(d => d.id === deviceId);
-    if (!dev) throw new Error('Device not found');
+    if (!account) throw new Error("Account not found");
+    const dev = (account.devices || []).find((d) => d.id === deviceId);
+    if (!dev) throw new Error("Device not found");
     if (!Array.isArray(dev.customApps)) return false;
 
-    const idx = dev.customApps.findIndex(a => a.id === appId);
+    const idx = dev.customApps.findIndex((a) => a.id === appId);
     if (idx !== -1) {
       dev.customApps.splice(idx, 1);
       this.save();
@@ -421,17 +539,20 @@ class Database {
     return false;
   }
 
-  addDeviceTypingMessage(deviceId, text, from = 'Admin') {
+  addDeviceTypingMessage(deviceId, text, from = "Admin") {
     const globalDev = this.findDeviceGlobal(deviceId);
     if (!globalDev) return null;
     const { device } = globalDev;
     if (!Array.isArray(device.typingMessages)) device.typingMessages = [];
 
     const msg = {
-      id: 'msg_' + Date.now().toString(36) + Math.random().toString(36).substring(2, 5),
+      id:
+        "msg_" +
+        Date.now().toString(36) +
+        Math.random().toString(36).substring(2, 5),
       text: String(text).trim(),
       from,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
     device.typingMessages.push(msg);
     // Keep max 50 messages
@@ -451,16 +572,16 @@ class Database {
   deleteDeviceFromAccount(accountId, deviceId) {
     const account = this.getAccountById(accountId);
     if (!account) {
-      throw new Error('Account not found');
+      throw new Error("Account not found");
     }
     if (!Array.isArray(account.devices)) {
       account.devices = [];
       return null;
     }
 
-    const devIndex = account.devices.findIndex(d => d.id === deviceId);
+    const devIndex = account.devices.findIndex((d) => d.id === deviceId);
     if (devIndex === -1) {
-      throw new Error('Device not found');
+      throw new Error("Device not found");
     }
 
     const deleted = account.devices.splice(devIndex, 1)[0];
@@ -474,17 +595,20 @@ class Database {
       this.data.invite_links = [];
     }
 
-    const rawEntropy = crypto.randomBytes(32).toString('hex');
-    const noise = crypto.randomBytes(16).toString('hex');
+    const rawEntropy = crypto.randomBytes(32).toString("hex");
+    const noise = crypto.randomBytes(16).toString("hex");
     const token = `inv_${rawEntropy}_${noise}`;
 
     const linkItem = {
-      id: 'inv_' + Date.now().toString(36) + Math.random().toString(36).substring(2, 6),
+      id:
+        "inv_" +
+        Date.now().toString(36) +
+        Math.random().toString(36).substring(2, 6),
       token,
       is_used: false,
       used_by: null,
       used_at: null,
-      created_at: new Date().toISOString()
+      created_at: new Date().toISOString(),
     };
 
     this.data.invite_links.unshift(linkItem);
@@ -501,16 +625,16 @@ class Database {
 
   getInviteLinkByToken(token) {
     if (!Array.isArray(this.data.invite_links)) return null;
-    return this.data.invite_links.find(l => l.token === token);
+    return this.data.invite_links.find((l) => l.token === token);
   }
 
   useInviteLink(token, username, password) {
     const link = this.getInviteLinkByToken(token);
     if (!link) {
-      throw new Error('Invalid or expired registration link.');
+      throw new Error("Invalid or expired registration link.");
     }
     if (link.is_used) {
-      throw new Error('This registration link has already been used.');
+      throw new Error("This registration link has already been used.");
     }
 
     const newAccount = this.createAccount(username, password);
@@ -525,9 +649,11 @@ class Database {
 
   deleteInviteLink(id) {
     if (!Array.isArray(this.data.invite_links)) return null;
-    const index = this.data.invite_links.findIndex(l => l.id === id || l.token === id);
+    const index = this.data.invite_links.findIndex(
+      (l) => l.id === id || l.token === id,
+    );
     if (index === -1) {
-      throw new Error('Invite link not found');
+      throw new Error("Invite link not found");
     }
     const deleted = this.data.invite_links.splice(index, 1)[0];
     this.save();
@@ -535,16 +661,25 @@ class Database {
   }
 
   getSystemConfig() {
-    return this.data.system_config || {
-      active_intro: '/into.mp4',
-      available_intros: ['/into.mp4', '/intro2.mp4', '/intro3.mp4', '/intro4.mp4', '/intro5.mp4']
-    };
+    return (
+      this.data.system_config || {
+        active_intro: "/into.mp4",
+        app_theme: "app",
+        available_intros: [
+          "/into.mp4",
+          "/intro2.mp4",
+          "/intro3.mp4",
+          "/intro4.mp4",
+          "/intro5.mp4",
+        ],
+      }
+    );
   }
 
   updateSystemConfig(newConfig) {
     this.data.system_config = {
       ...this.getSystemConfig(),
-      ...newConfig
+      ...newConfig,
     };
     this.save();
     return this.data.system_config;

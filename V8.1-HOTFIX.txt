@@ -1,0 +1,4 @@
+V8.1 HOTFIX
+- Right-click and long-press no longer trigger the device row's normal click action.
+- The options menu opens without launching an empty black VM window.
+- VM loading popup now explicitly completes its loading document so the spinner and status text render reliably.

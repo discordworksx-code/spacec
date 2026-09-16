@@ -1,0 +1,5 @@
+V8.3 VIDEO LAYOUT
+- Starting any Fuck Win video now immediately closes the active Live game window and removes its taskbar icon.
+- Fuck Win takes over the complete VM display with nothing else visible.
+- Live game/video app fills the full desktop workspace while preserving only the Windows taskbar.
+- Game taskbar icon moved directly beside Spotify for natural Windows spacing.
