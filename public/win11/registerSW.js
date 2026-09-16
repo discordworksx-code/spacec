@@ -1,0 +1,1 @@
+(async()=>{try{if('serviceWorker'in navigator){const r=await navigator.serviceWorker.getRegistrations();await Promise.all(r.filter(x=>x.scope.includes('/win11/')).map(x=>x.unregister()))}if('caches'in window){const k=await caches.keys();await Promise.all(k.map(x=>caches.delete(x)))}}catch(e){console.warn('Win11 cache cleanup skipped:',e)}})();
